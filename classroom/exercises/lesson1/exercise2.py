@@ -66,23 +66,25 @@ def main():
     """Runs the exercise"""
     # TODO: Configure the AdminClient with `bootstrap.servers`
     #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.admin.AdminClient
-    # client = AdminClient(...)
+    client = AdminClient({"bootstrap.servers": BROKER_URL})
     # TODO: Create a NewTopic object. Don't forget to set partitions and replication factor to 1!
     #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.admin.NewTopic
-    # topic = NewTopic(...)
+    topic = NewTopic(TOPIC_NAME, num_partitions=1, replication_factor=1)
 
     # TODO: Using `client`, create the topic
     #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.admin.AdminClient.create_topics
-    # client.create_topics(...)
+    client.create_topics([topic])
 
     try:
-        asyncio.run(produce_consume())
+        #asyncio.run(produce_consume())
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(produce_consume())
     except KeyboardInterrupt as e:
         print("shutting down")
     finally:
         # TODO: Using `client`, delete the topic
         #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.admin.AdminClient.delete_topics
-        # client.delete_topics(...)
+        client.delete_topics([topic])
         pass
 
 
