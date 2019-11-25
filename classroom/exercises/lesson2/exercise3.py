@@ -23,7 +23,11 @@ class Purchase:
         """Serializes the object in JSON string format"""
         # TODO: Serializer the Purchase object
         #       See: https://docs.python.org/3/library/json.html#json.dumps
-        return ""
+        return json.dumps({
+            "username": self.username,
+            "currency": self.currency,
+            "amount": self.amount,
+        })
 
 
 def produce_sync(topic_name):
@@ -32,11 +36,18 @@ def produce_sync(topic_name):
 
     # TODO: Write a synchronous production loop.
     #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.Producer.flush
-    while True:
+    i = 0
+    while i <= 10000:
         # TODO: Instantiate a `Purchase` on every iteration. Make sure to serialize it before
         #       sending it to Kafka!
         # p.produce(topic_name, ...)
-        pass
+        # p.flush() -> wait for response
+        p.produce(TOPIC_NAME, Purchase().serialize())
+        p.flush()
+        if i % 1000 == 0:
+            print(i)
+        i += 1
+
 
 
 def main():

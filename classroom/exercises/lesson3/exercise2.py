@@ -26,7 +26,17 @@ class ClickEvent:
     #       See: https://avro.apache.org/docs/1.8.2/spec.html#schema_record
     #       See: https://fastavro.readthedocs.io/en/latest/schema.html?highlight=parse_schema#fastavro-schema
     #
-    # schema = parse_schema(...)
+    schema = parse_schema({
+        "type": "record",
+        "name": "click_event",
+        "namespace": "com.udacity.lesson3.exercise2",
+        "fields": [
+            {"name": "email", "type": "string"},
+            {"name": "timestamp", "type": "string"},
+            {"name": "uri", "type": "string"},
+            {"name": "number", "type": "int"},
+        ]
+    })
 
     def serialize(self):
         """Serializes the ClickEvent for sending to Kafka"""
@@ -36,15 +46,19 @@ class ClickEvent:
         #
         # HINT: Python dataclasses provide an `asdict` method that can quickly transform this
         #       instance into a dictionary!
-        #       See: https://docs.python.org/3/library/dataclasses.html#dataclasses.asdict
+        #       sSee: https://docs.python.org/3/library/dataclasses.html#dataclasses.asdict
         #
         # HINT: Use BytesIO for your output buffer. Once you have an output buffer instance, call
         #       `getvalue() to retrieve the data inside the buffer.
         #       See: https://docs.python.org/3/library/io.html?highlight=bytesio#io.BytesIO
         #
-        return json.dumps(
-            {"uri": self.uri, "timestamp": self.timestamp, "email": self.email}
-        )
+        # return json.dumps(
+        #     {"uri": self.uri, "timestamp": self.timestamp, "email": self.email}
+        # )
+        out = BytesIO()
+        writer(out, ClickEvent.schema, [asdict(self)])
+        return out.getvalue()
+
 
 
 async def produce(topic_name):

@@ -46,10 +46,24 @@ class ClickEvent:
                 {"name": "email", "type": "string"},
                 {"name": "timestamp", "type": "string"},
                 {"name": "uri", "type": "string"},
-                {"name": "number", "type": "int"}
+                {"name": "number", "type": "int"},
                 #
                 # TODO: Add the attributes map!
                 #
+                {
+                    "name": "attributes",
+                    "type": {
+                        "type": "map",
+                        "values": {
+                            "type": "record",
+                            "name": "attribute",
+                            "fields": [
+                                {"name": "element", "type": "string"},
+                                {"name": "content", "type": "string"}
+                            ]
+                        }
+                    }
+                }
             ],
         }
     )

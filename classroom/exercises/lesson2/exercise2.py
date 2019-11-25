@@ -11,7 +11,8 @@ def topic_exists(client, topic_name):
     """Checks if the given topic exists"""
     # TODO: Check to see if the given topic exists
     #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/#confluent_kafka.Consumer.list_topics
-    return True
+    topic_metadata = client.list_topics(timeout=5)
+    return topic_metadata.topics.get(topic_name) is not None
 
 
 def create_topic(client, topic_name):
@@ -25,10 +26,17 @@ def create_topic(client, topic_name):
     # See: https://docs.confluent.io/current/installation/configuration/topic-configs.html
     futures = client.create_topics(
         [
-            # TODO
-            # NewTopic(
-            #    ...
-            # )
+            NewTopic(
+               topic = topic_name,
+               num_partitions = 5,
+               replication_factor = 1,
+               config= {
+                "cleanup.policy": "compact",
+                "compression.type": "lz4",
+                "delete.retention.ms": "100",
+                "file.delete.delay.ms": "100",
+               }
+            )
         ]
     )
 
@@ -48,7 +56,7 @@ def main():
     #
     # TODO: Decide on a topic name
     #
-    topic_name = ""
+    topic_name = "sample2"
     exists = topic_exists(client, topic_name)
     print(f"Topic {topic_name} exists: {exists}")
 

@@ -18,6 +18,8 @@ async def consume(topic_name):
     c = Consumer({"bootstrap.servers": BROKER_URL, "group.id": "0"})
     c.subscribe([topic_name])
 
+    i = 0
+
     while True:
         #
         # TODO: Write a loop that uses consume to grab 5 messages at a time and has a timeout.
@@ -26,6 +28,18 @@ async def consume(topic_name):
 
         # TODO: Print something to indicate how many messages you've consumed. Print the key and value of
         #       any message(s) you consumed
+        messages = c.consume(5, 1.0)
+
+        for message in messages:
+            i += 1
+            if message is None:
+                continue
+            elif message.error() is not None:
+                print(f"error from consumer  {message.error()}")
+            else:
+                print(f"consumed message {message.key()}: {message.value()}")
+            print(f"{i} messages")
+
 
         # Do not delete this!
         await asyncio.sleep(0.01)

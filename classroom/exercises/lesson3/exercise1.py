@@ -37,7 +37,12 @@ async def consume(topic_name):
             #       told us to expect the keys "email", "uri", and "timestamp".
             #
             try:
-                pass
+                ce_json = json.loads(message.value())
+                print(ClickEvent(
+                    email = ce_json['email'],
+                    timestamp = ce_json['timestamp'],
+                    uri = ce_json['uri']
+                ))
             except KeyError as e:
                 print(f"Failed to unpack message {e}")
         await asyncio.sleep(1.0)

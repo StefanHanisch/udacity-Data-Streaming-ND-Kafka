@@ -36,7 +36,7 @@ class ClickEvent:
     # TODO: Load the schema using the Confluent avro loader
     #       See: https://github.com/confluentinc/confluent-kafka-python/blob/master/confluent_kafka/avro/load.py#L23
     #
-    schema = """{
+    schema = avro.loads("""{
         "type": "record",
         "name": "click_event",
         "namespace": "com.udacity.lesson3.exercise4",
@@ -60,7 +60,7 @@ class ClickEvent:
                 }
             }
         ]
-    }"""
+    }""")
 
 
 async def produce(topic_name):
@@ -69,13 +69,14 @@ async def produce(topic_name):
     # TODO: Create a CachedSchemaRegistryClient. Use SCHEMA_REGISTRY_URL.
     #       See: https://github.com/confluentinc/confluent-kafka-python/blob/master/confluent_kafka/avro/cached_schema_registry_client.py#L47
     #
-    # schema_registry = TODO
+    schema_registry = CachedSchemaRegistryClient(SCHEMA_REGISTRY_URL)
 
     #
     # TODO: Replace with an AvroProducer.
     #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=loads#confluent_kafka.avro.AvroProducer
     #
-    p = Producer({"bootstrap.servers": BROKER_URL})
+    p = AvroProducer({"bootstrap.servers": BROKER_URL},
+                schema_registry = schema_registry)
     while True:
         #
         # TODO: Replace with an AvroProducer produce. Make sure to specify the schema!
@@ -85,7 +86,7 @@ async def produce(topic_name):
         p.produce(
             topic=topic_name,
             value=asdict(ClickEvent()),
-            # TODO: Supply schema
+            value_schema=ClickEvent.schema
         )
         await asyncio.sleep(1.0)
 
@@ -95,13 +96,14 @@ async def consume(topic_name):
     #
     # TODO: Create a CachedSchemaRegistryClient
     #
-    # schema_registry = TODO
+    schema_registry = CachedSchemaRegistryClient(SCHEMA_REGISTRY_URL)
 
     #
     # TODO: Use the Avro Consumer
     #       See: https://docs.confluent.io/current/clients/confluent-kafka-python/index.html?highlight=loads#confluent_kafka.avro.AvroConsumer
     #
-    c = Consumer({"bootstrap.servers": BROKER_URL, "group.id": "0"})
+    c = AvroConsumer({"bootstrap.servers": BROKER_URL, "group.id": "0"},
+        schema_registry=schema_registry)
     c.subscribe([topic_name])
     while True:
         message = c.poll(1.0)
