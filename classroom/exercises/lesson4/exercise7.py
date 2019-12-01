@@ -19,13 +19,18 @@ CONSUMER_GROUP = f"solution7-consumer-group-{random.randint(0,10000)}"
 async def consume():
     """Consumes from REST Proxy"""
     # TODO: Define a consumer name
-    consumer_name = ""
+    consumer_name = "exercise7-consumer"
     # TODO: Define the appropriate headers
     #       See: https://docs.confluent.io/current/kafka-rest/api.html#content-types
-    headers = {}
+    headers = {
+        "Content-Type": "application/vnd.kafka.json.v2+json"
+    }
     # TODO: Define the consumer group creation payload, use avro
     #       See: https://docs.confluent.io/current/kafka-rest/api.html#post--consumers-(string-group_name)
-    data = {}
+    data = {
+        "name": consumer_name,
+        "format": "avro"
+    }
     resp = requests.post(
         f"{REST_PROXY_URL}/consumers/{CONSUMER_GROUP}",
         data=json.dumps(data),
@@ -45,7 +50,9 @@ async def consume():
     # TODO: Create the subscription payload
     #       See: https://docs.confluent.io/current/kafka-rest/api.html#consumers
     #
-    data = {}
+    data = {
+        "topics": [TOPIC_NAME]
+    }
     resp = requests.post(
         f"{resp_data['base_uri']}/subscription", data=json.dumps(data), headers=headers
     )
@@ -62,8 +69,10 @@ async def consume():
         # TODO: Set the Accept header to the same data type as the consumer was created with
         #       See: https://docs.confluent.io/current/kafka-rest/api.html#get--consumers-(string-group_name)-instances-(string-instance)-records
         #
-        headers = {}
-        resp = requests.get(f"{resp_data['base_uri']}/records", headers=headers)
+        headers = {
+            "Accept": "application/vnd.kafka.avro.v2+json"
+        }
+        resp = requests.get(f"{resp_data['base_uri']}/records?timeout=10000", headers=headers)
         try:
             resp.raise_for_status()
         except:

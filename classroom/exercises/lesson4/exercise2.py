@@ -26,11 +26,11 @@ def configure_connector():
         headers={"Content-Type": "application/json"},
         data=json.dumps(
             {
-                "name": "",  # TODO
+                "name": CONNECTOR_NAME,  # TODO
                 "config": {
-                    "connector.class": "",  # TODO
-                    "topic": "",  # TODO
-                    "tasks.max": 0,  # TODO
+                    "connector.class": "FileStreamSource",  # TODO
+                    "topic": "lesson4.sample2.logs",  # TODO
+                    "tasks.max": 1,  # TODO
                     "file": f"/tmp/{CONNECTOR_NAME}.log",
                     "key.converter": "org.apache.kafka.connect.json.JsonConverter",
                     "key.converter.schemas.enable": "false",

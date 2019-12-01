@@ -5,6 +5,7 @@ import requests
 
 
 KAFKA_CONNECT_URL = "http://localhost:8083/connectors"
+CONNECTOR_NAME = "sample3"
 
 
 def configure_connector():
@@ -31,11 +32,11 @@ def configure_connector():
             {
                 "name": "clicks-jdbc",  # TODO
                 "config": {
-                    "connector.class": "",  # TODO
-                    "topic.prefix": "",  # TODO
-                    "mode": "",  # TODO
-                    "incrementing.column.name": "",  # TODO
-                    "table.whitelist": "",  # TODO
+                    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",  # TODO
+                    "topic.prefix": "connect-",  # TODO
+                    "mode": "incrementing",  # TODO
+                    "incrementing.column.name": "id",  # TODO
+                    "table.whitelist": "purchase",  # TODO
                     "tasks.max": 1,
                     "connection.url": "jdbc:postgresql://localhost:5432/classroom",
                     "connection.user": "root",

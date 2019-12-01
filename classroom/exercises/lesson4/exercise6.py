@@ -29,12 +29,17 @@ def produce():
 
     # TODO: Set the appropriate headers
     #       See: https://docs.confluent.io/current/kafka-rest/api.html#content-types
-    headers = {}
+    headers = {
+    "Content-Type": "application/vnd.kafka.avro.v2+json"
+    }
     # TODO: Update the below payload to include the Avro Schema string
     #       See: https://docs.confluent.io/current/kafka-rest/api.html#post--topics-(string-topic_name)
     data = {
         # TODO
-        "records": [{"value": asdict(ClickEvent())}]
+        "value_schema": AVRO_SCHEMA,
+        "records": [{
+            "value": asdict(ClickEvent())
+        }]
     }
     resp = requests.post(
         f"{REST_PROXY_URL}/topics/lesson4.exercise6.click_events",  # TODO
